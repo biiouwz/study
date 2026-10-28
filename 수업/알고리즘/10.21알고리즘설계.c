@@ -1,47 +1,61 @@
 #include <stdio.h>
-int hash(int key) { return key % 7; }
+
 #define TABLE_SIZE 7
 #define EMPTY -1
+#define DELETED -2
 
-struct Node {
-  int key;
-  struct Node *next;
-};
+int table[TABLE_SIZE]; // 포인터가 아닌 일반 int 배열로 변경
 
-struct Node *table[TABLE_SIZE];
+int hash(int key) { return key % TABLE_SIZE; }
 
 void initTable() {
   for (int i = 0; i < TABLE_SIZE; i++) {
-    table[i] = NULL;
+    table[i] = EMPTY; // NULL 대신 EMPTY(-1)로 초기화
   }
 }
 
-void insert(int key){
-    int index = hash(key);
-    int count = 0;
-    while(count < TABLE_SIZE){
-        if (table[index] == EMPTY){
-            table[index] = key;
-            return;
-        }
-        index = (index+1)%TABLE_SIZE;
-        count++;
+void insert(int key) {
+  int index = hash(key);
+  int count = 0;
+  while (count < TABLE_SIZE) {
+    if (table[index] == EMPTY || table[index] == DELETED) {
+      table[index] = key;
+      return;
     }
-    printf("Hash table is full.\n");
+    index = (index + 1) % TABLE_SIZE;
+    count++;
+  }
+  printf("Hash table is full.\n");
 }
 
-int search(int key){
-    int index = hash(key);
-    int count=0;
-    while(count<TABLE_SIZE){
-        if (table[index] == key){
-            return index;
-        }
-        if (table[index] == EMPTY){
-            return -1;
-        }
-        index = (index+1)%TABLE_SIZE;
-        count++;
+int search(int key) {
+  int index = hash(key);
+  int count = 0;
+  while (count < TABLE_SIZE) {
+    if (table[index] == key) {
+      return index;
     }
-    return -1;
+    if (table[index] == EMPTY) {
+      return -1;
+    }
+    index = (index + 1) % TABLE_SIZE;
+    count++;
+  }
+  return -1;
+}
+
+void DELETE(int key) {
+  int index = hash(key);
+  int count = 0;
+  while (count < TABLE_SIZE) {
+    if (table[index] == key) {
+      table[index] = DELETED;
+      return;
+    }
+    if (table[index] == EMPTY) {
+      return;
+    }
+    index = (index + 1) % TABLE_SIZE;
+    count++;
+  }
 }
